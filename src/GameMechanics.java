@@ -1,20 +1,39 @@
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class GameMechanics {
 
 	private static String currentPlayer = "X";
+	private static int score1 = 0, score2 = 0;
 
-	public static void selectCordinate(JButton button, JButton[][] board, int row, int column) {
+	public static void selectCordinate(JFrame gameBoardFrame, JButton button, JButton[][] board, int row, int column,
+			JLabel user1Label, JLabel user2Label) {
 
-		if (button.getText().equals("")) {
-			button.setText(currentPlayer);
+		if (!button.getText().equals("") || checkWinner(board)) {
+			return;
 		}
 
-        if (checkWinner(board)) {
-            System.out.println(currentPlayer + " kazandı!");
-        } else {
-            switchPlayer();
-        }
+		button.setText(currentPlayer);
+
+		if (checkWinner(board)) {
+			if (currentPlayer == "X") {
+				++score1;
+				user1Label.setText("User 1: " + score1);
+			} else {
+				++score2;
+				user2Label.setText("User 1: " + score2);
+			}
+			String winnerString = currentPlayer + " won!";
+			JOptionPane.showMessageDialog(gameBoardFrame, winnerString, "Game", JOptionPane.INFORMATION_MESSAGE);
+			clearBoard(board, user1Label, user2Label);
+		} else if (checkBoardIsFull(board)) {
+			JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!", "Game", JOptionPane.INFORMATION_MESSAGE);
+			clearBoard(board, user1Label, user2Label);
+		} else {
+			switchPlayer();
+		}
 	}
 
 	public static boolean checkWinner(JButton[][] board) {
@@ -48,8 +67,37 @@ public class GameMechanics {
 		return false;
 	}
 	
-	public static void restartGame(JButton[] button) {
-		button.
+	public static boolean checkBoardIsFull(JButton[][] board) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (board[i][j].getText().equals("")) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+	
+	public static void clearBoard(JButton[][] board,JLabel user1Label, JLabel user2Label) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {		
+				board[i][j].setText("");
+			}
+		}
+	}
+
+	public static void restartGame(JButton[][] board,JLabel user1Label, JLabel user2Label) {
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {		
+				board[i][j].setText("");
+			}
+		}
+		clearBoard(board, user1Label, user2Label);
+		user1Label.setText("User 1: ");
+		user2Label.setText("User 2: ");
+
 	}
 
 	public static void switchPlayer() {

@@ -11,6 +11,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 public class Main {
@@ -30,6 +33,30 @@ public class Main {
 		} else {
 			System.out.println("Background image not found");
 		}
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu game = new JMenu("Game");
+		JMenuItem nGame = new JMenuItem("New Game");
+		JMenuItem restartGame = new JMenuItem("Restart");
+		JMenuItem pauseGame = new JMenuItem("Pause");
+		JMenuItem exitGame = new JMenuItem("Exit");
+		game.add(nGame);
+		game.add(restartGame);
+		game.add(pauseGame);
+		game.add(exitGame);
+		JMenu gameMode = new JMenu("Mode");
+		JMenuItem pwb = new JMenuItem("Play with AI");
+		JMenuItem pwp = new JMenuItem("Play with Player");
+		gameMode.add(pwb);
+		gameMode.add(pwp);
+		JMenu help = new JMenu("Help");
+		JMenuItem howToPlay = new JMenuItem("How to play");
+		JMenuItem aboutGame = new JMenuItem("About");
+		help.add(howToPlay);
+		help.add(aboutGame);
+		menuBar.add(game);
+		menuBar.add(gameMode);
+		menuBar.add(help);
 
 		JPanel rightGameBoard = new JPanel(new GridLayout(3, 3, 20, 20));
 		JPanel leftInfoBoard = new JPanel(new GridLayout(4, 1, 50, 20));
@@ -58,13 +85,17 @@ public class Main {
 		gameGuideJLabel.setFont(new Font("Arial", Font.ITALIC, 12));
 		gameGuideJLabel.setHorizontalAlignment(JLabel.CENTER);
 
-		JButton startbtn = new JButton("Start");
-		JButton stopbtn = new JButton("Stop");
-		JButton restartbtn = new JButton("Restart");
+//		JButton startbtn = new JButton("Start");
+//		JButton stopbtn = new JButton("Stop");
 
-		infoBottom.add(startbtn);
-		infoBottom.add(stopbtn);
+		JButton restartbtn = new JButton("Restart Game");
+		JButton clearbtn = new JButton("Clear Board");
+
+//		infoBottom.add(startbtn);
+//		infoBottom.add(stopbtn);
+		
 		infoBottom.add(restartbtn);
+		infoBottom.add(clearbtn);
 
 		JButton row1col1 = new JButton("");
 		JButton row1col2 = new JButton("");
@@ -85,11 +116,20 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (JButton cell : cells) {
-					cell.setText("");
-				}
-				user1StatsJLabel.setText("User 1: ");
-				user2StatsJLabel.setText("User 2: ");
+//				for (JButton cell : cells) {
+//					cell.setText("");
+//				}
+//				user1StatsJLabel.setText("User 1: ");
+//				user2StatsJLabel.setText("User 2: ");
+				GameMechanics.restartGame(board,user1StatsJLabel,user2StatsJLabel);
+			}
+		});
+		
+		clearbtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GameMechanics.clearBoard(board, user2StatsJLabel, gameGuideJLabel);
 			}
 		});
 
@@ -100,15 +140,24 @@ public class Main {
 			cell.setForeground(Color.WHITE);
 		}
 
-		row1col1.addActionListener(e -> GameMechanics.selectCordinate(row1col1, board, 0, 0));
-		row1col2.addActionListener(e -> GameMechanics.selectCordinate(row1col2, board, 0, 1));
-		row1col3.addActionListener(e -> GameMechanics.selectCordinate(row1col3, board, 0, 2));
-		row2col1.addActionListener(e -> GameMechanics.selectCordinate(row2col1, board, 1, 0));
-		row2col2.addActionListener(e -> GameMechanics.selectCordinate(row2col2, board, 1, 1));
-		row2col3.addActionListener(e -> GameMechanics.selectCordinate(row2col3, board, 1, 2));
-		row3col1.addActionListener(e -> GameMechanics.selectCordinate(row3col1, board, 2, 0));
-		row3col2.addActionListener(e -> GameMechanics.selectCordinate(row3col2, board, 2, 1));
-		row3col3.addActionListener(e -> GameMechanics.selectCordinate(row3col3, board, 2, 2));
+		row1col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col1, board, 0, 0,
+				user1StatsJLabel, user2StatsJLabel));
+		row1col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col2, board, 0, 1,
+				user1StatsJLabel, user2StatsJLabel));
+		row1col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col3, board, 0, 2,
+				user1StatsJLabel, user2StatsJLabel));
+		row2col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col1, board, 1, 0,
+				user1StatsJLabel, user2StatsJLabel));
+		row2col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col2, board, 1, 1,
+				user1StatsJLabel, user2StatsJLabel));
+		row2col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col3, board, 1, 2,
+				user1StatsJLabel, user2StatsJLabel));
+		row3col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col1, board, 2, 0,
+				user1StatsJLabel, user2StatsJLabel));
+		row3col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col2, board, 2, 1,
+				user1StatsJLabel, user2StatsJLabel));
+		row3col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col3, board, 2, 2,
+				user1StatsJLabel, user2StatsJLabel));
 
 		user1StatsJLabel.setForeground(Color.WHITE);
 		user2StatsJLabel.setForeground(Color.WHITE);
@@ -137,6 +186,8 @@ public class Main {
 		rightGameBoard.setOpaque(false);
 		infoBottom.setOpaque(false);
 		scoreBoard.setOpaque(false);
+
+		gameBoardFrame.add(menuBar, BorderLayout.NORTH);
 
 		gameBoardFrame.setSize(900, 540);
 		gameBoardFrame.setResizable(false);

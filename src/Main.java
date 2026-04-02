@@ -5,8 +5,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.foreign.AddressLayout;
 import java.net.URL;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Main {
@@ -23,13 +26,14 @@ public class Main {
 		JFrame gameBoardFrame = new JFrame("X O X - GAME");
 		gameBoardFrame.setLayout(new BorderLayout());
 
-		URL bgUrl = Main.class.getResource("/bg.png");
-		System.out.println("bgUrl = " + bgUrl);
+		URL bgUrl = Main.class.getResource("/assets/bg.png");
+//		System.out.println("bgUrl = " + bgUrl);
 
 		if (bgUrl != null) {
-			JLabel backgroundMenu = new JLabel(new ImageIcon(bgUrl));
-			backgroundMenu.setLayout(new BorderLayout());
-			gameBoardFrame.setContentPane(backgroundMenu);
+		    JLabel backgroundMenu = new JLabel(new ImageIcon(bgUrl));
+		    backgroundMenu.setLayout(new BorderLayout());
+		    backgroundMenu.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		    gameBoardFrame.setContentPane(backgroundMenu);
 		} else {
 			System.out.println("Background image not found");
 		}
@@ -37,13 +41,11 @@ public class Main {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu game = new JMenu("Game");
 		JMenuItem nGame = new JMenuItem("New Game");
-		JMenuItem restartGame = new JMenuItem("Restart");
-		JMenuItem pauseGame = new JMenuItem("Pause");
-		JMenuItem exitGame = new JMenuItem("Exit");
+		JMenuItem cGame = new JMenuItem("Clear");
+		JMenuItem eGame = new JMenuItem("Exit");
 		game.add(nGame);
-		game.add(restartGame);
-		game.add(pauseGame);
-		game.add(exitGame);
+		game.add(cGame);
+		game.add(eGame);
 		JMenu gameMode = new JMenu("Mode");
 		JMenuItem pwb = new JMenuItem("Play with AI");
 		JMenuItem pwp = new JMenuItem("Play with Player");
@@ -58,7 +60,7 @@ public class Main {
 		menuBar.add(gameMode);
 		menuBar.add(help);
 
-		JPanel rightGameBoard = new JPanel(new GridLayout(3, 3, 20, 20));
+		JPanel rightGameBoard = new JPanel(new GridLayout(3, 3, 10, 10));
 		JPanel leftInfoBoard = new JPanel(new GridLayout(4, 1, 50, 20));
 		JPanel infoBottom = new JPanel(new FlowLayout());
 		JPanel scoreBoard = new JPanel(new GridLayout(1, 2, 25, 25));
@@ -68,7 +70,9 @@ public class Main {
 		gameTitleJLabel.setHorizontalAlignment(JLabel.CENTER);
 
 		JLabel user1StatsJLabel = new JLabel("User 1: ");
+		user1StatsJLabel.setFont(new Font("Arial", Font.BOLD, 15));
 		JLabel user2StatsJLabel = new JLabel("User 2: ");
+		user2StatsJLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
 		user1StatsJLabel.setHorizontalAlignment(JLabel.CENTER);
 		user2StatsJLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -85,15 +89,9 @@ public class Main {
 		gameGuideJLabel.setFont(new Font("Arial", Font.ITALIC, 12));
 		gameGuideJLabel.setHorizontalAlignment(JLabel.CENTER);
 
-//		JButton startbtn = new JButton("Start");
-//		JButton stopbtn = new JButton("Stop");
-
 		JButton restartbtn = new JButton("Restart Game");
 		JButton clearbtn = new JButton("Clear Board");
 
-//		infoBottom.add(startbtn);
-//		infoBottom.add(stopbtn);
-		
 		infoBottom.add(restartbtn);
 		infoBottom.add(clearbtn);
 
@@ -112,33 +110,15 @@ public class Main {
 
 		JButton[] cells = { row1col1, row1col2, row1col3, row2col1, row2col2, row2col3, row3col1, row3col2, row3col3 };
 
-		restartbtn.addActionListener(new ActionListener() {
+		restartbtn.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel));
+		clearbtn.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel));
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-//				for (JButton cell : cells) {
-//					cell.setText("");
-//				}
-//				user1StatsJLabel.setText("User 1: ");
-//				user2StatsJLabel.setText("User 2: ");
-				GameMechanics.restartGame(board,user1StatsJLabel,user2StatsJLabel);
-			}
-		});
+		nGame.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel));
+		cGame.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel));
+		eGame.addActionListener(e -> System.exit(0));
 		
-		clearbtn.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GameMechanics.clearBoard(board, user2StatsJLabel, gameGuideJLabel);
-			}
-		});
-
-		for (JButton cell : cells) {
-			cell.setBorderPainted(false);
-			cell.setFocusPainted(false);
-			cell.setFont(new Font("Arial", Font.BOLD, 150));
-			cell.setForeground(Color.WHITE);
-		}
+		pwb.addActionListener(e-> GameMechanics.changeMode(false,board,user1StatsJLabel,user2StatsJLabel));
+		pwp.addActionListener(e-> GameMechanics.changeMode(true,board,user1StatsJLabel,user2StatsJLabel));
 
 		row1col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col1, board, 0, 0,
 				user1StatsJLabel, user2StatsJLabel));
@@ -158,6 +138,34 @@ public class Main {
 				user1StatsJLabel, user2StatsJLabel));
 		row3col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col3, board, 2, 2,
 				user1StatsJLabel, user2StatsJLabel));
+
+		howToPlay.addActionListener(e -> {
+			JLabel dialogLabel = new JLabel(gameGuideJLabel.getText());
+			dialogLabel.setFont(gameGuideJLabel.getFont());
+			dialogLabel.setHorizontalAlignment(JLabel.CENTER);
+			JOptionPane.showMessageDialog(null, dialogLabel, "How to play", JOptionPane.PLAIN_MESSAGE);
+		});
+
+		aboutGame.addActionListener(e -> {
+			JLabel aboutText = new JLabel("<html>"
+					+ "<h2>X O X - GAME</h2>" 
+					+ "<b>Developer:</b> Mahmut Caner Arslan<br>" 
+					+ "<b>GitHub:</b> mcanerarslan<br><br>" 
+					+ "This is a simple Tic-Tac-Toe game developed with Java Swing." 
+					+ "</html>");
+			aboutText.setFont(gameGuideJLabel.getFont());
+			aboutText.setHorizontalAlignment(JLabel.CENTER);
+			JOptionPane.showMessageDialog(null, aboutText, "About", JOptionPane.PLAIN_MESSAGE);
+		});
+
+		for (JButton cell : cells) {
+			cell.setBorderPainted(false);
+			cell.setFocusPainted(false);
+			cell.setFont(new Font("Arial", Font.BOLD, 140));
+			cell.setHorizontalAlignment(JLabel.CENTER);
+			cell.setVerticalAlignment(JLabel.CENTER);
+			cell.setForeground(Color.WHITE);
+		}
 
 		user1StatsJLabel.setForeground(Color.WHITE);
 		user2StatsJLabel.setForeground(Color.WHITE);
@@ -187,7 +195,7 @@ public class Main {
 		infoBottom.setOpaque(false);
 		scoreBoard.setOpaque(false);
 
-		gameBoardFrame.add(menuBar, BorderLayout.NORTH);
+		gameBoardFrame.setJMenuBar(menuBar);
 
 		gameBoardFrame.setSize(900, 540);
 		gameBoardFrame.setResizable(false);

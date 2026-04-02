@@ -7,6 +7,9 @@ public class GameMechanics {
 
 	private static String currentPlayer = "X";
 	private static int score1 = 0, score2 = 0;
+	private static boolean isModeP2P = false;
+	private static boolean isBotLastWinner = false;
+	private static boolean wasLastMoveByBot = false;
 
 	public static void selectCordinate(JFrame gameBoardFrame, JButton button, JButton[][] board, int row, int column,
 			JLabel user1Label, JLabel user2Label) {
@@ -15,25 +18,104 @@ public class GameMechanics {
 			return;
 		}
 
-		button.setText(currentPlayer);
-
-		if (checkWinner(board)) {
-			if (currentPlayer == "X") {
-				++score1;
-				user1Label.setText("User 1: " + score1);
+		if (isModeP2P) {
+			button.setText(currentPlayer);
+			if (checkWinner(board)) {
+				if (currentPlayer.equals("X")) {
+					++score1;
+					user1Label.setText("User 1: " + score1);
+				} else {
+					++score2;
+					user2Label.setText("User 2: " + score2);
+				}
+				String winnerString = currentPlayer + " won!";
+				JOptionPane.showMessageDialog(gameBoardFrame, winnerString, "Game", JOptionPane.PLAIN_MESSAGE);
+				clearBoard(board, user1Label, user2Label);
+			} else if (checkBoardIsFull(board)) {
+				JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!", "Game", JOptionPane.PLAIN_MESSAGE);
+				clearBoard(board, user1Label, user2Label);
 			} else {
-				++score2;
-				user2Label.setText("User 1: " + score2);
+				switchPlayer();
 			}
-			String winnerString = currentPlayer + " won!";
-			JOptionPane.showMessageDialog(gameBoardFrame, winnerString, "Game", JOptionPane.INFORMATION_MESSAGE);
-			clearBoard(board, user1Label, user2Label);
-		} else if (checkBoardIsFull(board)) {
-			JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!", "Game", JOptionPane.INFORMATION_MESSAGE);
-			clearBoard(board, user1Label, user2Label);
 		} else {
-			switchPlayer();
+			if (currentPlayer.equals("X")) {
+				button.setText("X");
+
+				if (checkWinner(board)) {
+					score1++;
+					user1Label.setText("User: " + score1);
+					JOptionPane.showMessageDialog(gameBoardFrame, "X won!");
+					clearBoard(board, user1Label, user2Label);
+					return;
+				}
+
+				if (checkBoardIsFull(board)) {
+					JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!");
+					clearBoard(board, user1Label, user2Label);
+					return;
+				}
+
+				switchPlayer();
+
+				if (currentPlayer.equals("O")) {
+
+					System.out.println("Botun sirasi");
+
+					javax.swing.Timer timer = new javax.swing.Timer(500, e -> {
+						BotMechanics.startBot(board, user1Label, user2Label);
+						if (checkWinner(board)) {
+							score2++;
+							user2Label.setText("Bot: " + score2);
+							isBotLastWinner = true;
+							JOptionPane.showMessageDialog(gameBoardFrame, "O won!");
+							clearBoard(board, user1Label, user2Label);
+
+
+						} else if (checkBoardIsFull(board)) {
+							wasLastMoveByBot = true;
+							JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!");
+							clearBoard(board, user1Label, user2Label);
+
+						} else {
+							switchPlayer();
+						}
+
+					});
+
+					timer.setRepeats(false);
+					timer.start();
+				}
+
+			}
 		}
+	}
+	
+	public static void clearBoard(JButton[][] board, JLabel user1Label, JLabel user2Label) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				board[i][j].setText("");
+			}
+		}
+		
+		if(!isModeP2P && (wasLastMoveByBot || isBotLastWinner)) {
+			System.out.println("Bot tekrar başlıyor...");
+			
+			wasLastMoveByBot = false;
+			isBotLastWinner = false;
+			
+			currentPlayer = "O";
+			
+			javax.swing.Timer timer = new javax.swing.Timer(500, e->{
+				BotMechanics.startBot(board, user1Label, user2Label);
+				switchPlayer();
+			});
+			
+			timer.setRepeats(false);
+			timer.start();
+		}else {
+			currentPlayer = "X";
+		}
+		
 	}
 
 	public static boolean checkWinner(JButton[][] board) {
@@ -66,7 +148,7 @@ public class GameMechanics {
 		}
 		return false;
 	}
-	
+
 	public static boolean checkBoardIsFull(JButton[][] board) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -78,26 +160,32 @@ public class GameMechanics {
 
 		return true;
 	}
-	
-	public static void clearBoard(JButton[][] board,JLabel user1Label, JLabel user2Label) {
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {		
-				board[i][j].setText("");
-			}
+
+
+
+	public static void restartGame(JButton[][] board, JLabel user1Label, JLabel user2Label) {
+		clearBoard(board, user1Label, user2Label);
+		score1 = 0;
+		score2 = 0;
+		currentPlayer = "X";
+		setScoreBoard(isModeP2P, user1Label, user2Label);
+	}
+
+	public static void changeMode(boolean decision, JButton[][] board, JLabel user1Label, JLabel user2Label) {
+		if (decision != isModeP2P) {
+			isModeP2P = decision;
+			restartGame(board, user1Label, user2Label);
 		}
 	}
 
-	public static void restartGame(JButton[][] board,JLabel user1Label, JLabel user2Label) {
-
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {		
-				board[i][j].setText("");
-			}
+	public static void setScoreBoard(Boolean decision, JLabel user1Label, JLabel user2Label) {
+		if (decision) {
+			user1Label.setText("User 1: ");
+			user2Label.setText("User 2: ");
+		} else {
+			user1Label.setText("User: ");
+			user2Label.setText("Bot: ");
 		}
-		clearBoard(board, user1Label, user2Label);
-		user1Label.setText("User 1: ");
-		user2Label.setText("User 2: ");
-
 	}
 
 	public static void switchPlayer() {

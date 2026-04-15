@@ -12,7 +12,7 @@ public class GameMechanics {
 	private static boolean wasLastMoveByBot = false;
 
 	public static void selectCordinate(JFrame gameBoardFrame, JButton button, JButton[][] board, int row, int column,
-			JLabel user1Label, JLabel user2Label) {
+			JLabel user1Label, JLabel user2Label, JLabel waitingBotDecisionJLabel) {
 
 		if (!button.getText().equals("") || checkWinner(board)) {
 			return;
@@ -23,21 +23,24 @@ public class GameMechanics {
 			if (checkWinner(board)) {
 				if (currentPlayer.equals("X")) {
 					++score1;
-					user1Label.setText("User 1: " + score1);
+					user1Label.setText("User (X): " + score1);
 				} else {
 					++score2;
-					user2Label.setText("User 2: " + score2);
+					user2Label.setText("User (O): " + score2);
 				}
 				String winnerString = currentPlayer + " won!";
 				JOptionPane.showMessageDialog(gameBoardFrame, winnerString, "Game", JOptionPane.PLAIN_MESSAGE);
-				clearBoard(board, user1Label, user2Label);
+				clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 			} else if (checkBoardIsFull(board)) {
 				JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!", "Game", JOptionPane.PLAIN_MESSAGE);
-				clearBoard(board, user1Label, user2Label);
+				clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 			} else {
 				switchPlayer();
 			}
 		} else {
+			
+			waitingBotDecisionJLabel.setText("");
+			
 			if (currentPlayer.equals("X")) {
 				button.setText("X");
 
@@ -45,13 +48,13 @@ public class GameMechanics {
 					score1++;
 					user1Label.setText("User: " + score1);
 					JOptionPane.showMessageDialog(gameBoardFrame, "X won!");
-					clearBoard(board, user1Label, user2Label);
+					clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 					return;
 				}
 
 				if (checkBoardIsFull(board)) {
 					JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!");
-					clearBoard(board, user1Label, user2Label);
+					clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 					return;
 				}
 
@@ -59,29 +62,32 @@ public class GameMechanics {
 
 				if (currentPlayer.equals("O")) {
 
-					System.out.println("Botun sirasi");
+					waitingBotDecisionJLabel.setText("The AI's selection is awaited.");
 
-					javax.swing.Timer timer = new javax.swing.Timer(500, e -> {
-						BotMechanics.startBot(board, user1Label, user2Label);
+					javax.swing.Timer timer = new javax.swing.Timer(700, e -> {
+						BotMechanics.startHardBot(board, user1Label, user2Label);
 						if (checkWinner(board)) {
 							score2++;
 							user2Label.setText("Bot: " + score2);
 							isBotLastWinner = true;
 							JOptionPane.showMessageDialog(gameBoardFrame, "O won!");
-							clearBoard(board, user1Label, user2Label);
+							clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 
 
 						} else if (checkBoardIsFull(board)) {
 							wasLastMoveByBot = true;
 							JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!");
-							clearBoard(board, user1Label, user2Label);
+							clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 
 						} else {
 							switchPlayer();
 						}
 
+						waitingBotDecisionJLabel.setText("The AI made its selection.");
 					});
-
+					
+					
+					
 					timer.setRepeats(false);
 					timer.start();
 				}
@@ -90,7 +96,8 @@ public class GameMechanics {
 		}
 	}
 	
-	public static void clearBoard(JButton[][] board, JLabel user1Label, JLabel user2Label) {
+	public static void clearBoard(JButton[][] board, JLabel user1Label, JLabel user2Label, JLabel waitingBotDecisionJLabel) {
+		waitingBotDecisionJLabel.setText("");
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				board[i][j].setText("");
@@ -98,15 +105,13 @@ public class GameMechanics {
 		}
 		
 		if(!isModeP2P && (wasLastMoveByBot || isBotLastWinner)) {
-			System.out.println("Bot tekrar başlıyor...");
-			
 			wasLastMoveByBot = false;
 			isBotLastWinner = false;
 			
 			currentPlayer = "O";
 			
-			javax.swing.Timer timer = new javax.swing.Timer(500, e->{
-				BotMechanics.startBot(board, user1Label, user2Label);
+			javax.swing.Timer timer = new javax.swing.Timer(700, e->{
+				BotMechanics.startHardBot(board, user1Label, user2Label);
 				switchPlayer();
 			});
 			
@@ -115,7 +120,6 @@ public class GameMechanics {
 		}else {
 			currentPlayer = "X";
 		}
-		
 	}
 
 	public static boolean checkWinner(JButton[][] board) {
@@ -163,25 +167,25 @@ public class GameMechanics {
 
 
 
-	public static void restartGame(JButton[][] board, JLabel user1Label, JLabel user2Label) {
-		clearBoard(board, user1Label, user2Label);
+	public static void restartGame(JButton[][] board, JLabel user1Label, JLabel user2Label,JLabel waitingBotDecisionJLabel) {
+		clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
 		score1 = 0;
 		score2 = 0;
 		currentPlayer = "X";
 		setScoreBoard(isModeP2P, user1Label, user2Label);
 	}
 
-	public static void changeMode(boolean decision, JButton[][] board, JLabel user1Label, JLabel user2Label) {
+	public static void changeMode(boolean decision, JButton[][] board, JLabel user1Label, JLabel user2Label, JLabel waitingBotDecisionJLabel) {
 		if (decision != isModeP2P) {
 			isModeP2P = decision;
-			restartGame(board, user1Label, user2Label);
+			restartGame(board, user1Label, user2Label,waitingBotDecisionJLabel);
 		}
 	}
 
 	public static void setScoreBoard(Boolean decision, JLabel user1Label, JLabel user2Label) {
 		if (decision) {
-			user1Label.setText("User 1: ");
-			user2Label.setText("User 2: ");
+			user1Label.setText("User (X): ");
+			user2Label.setText("User (O): ");
 		} else {
 			user1Label.setText("User: ");
 			user2Label.setText("Bot: ");

@@ -1,11 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.foreign.AddressLayout;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -27,6 +25,8 @@ public class Main {
 		gameBoardFrame.setLayout(new BorderLayout());
 
 		URL bgUrl = Main.class.getResource("/assets/bg.png");
+		URL restartbtnUrl = Main.class.getResource("/assets/restart.png");
+		URL clearbtnUrl = Main.class.getResource("/assets/clear.png");
 //		System.out.println("bgUrl = " + bgUrl);
 
 		if (bgUrl != null) {
@@ -34,10 +34,8 @@ public class Main {
 		    backgroundMenu.setLayout(new BorderLayout());
 		    backgroundMenu.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		    gameBoardFrame.setContentPane(backgroundMenu);
-		} else {
-			System.out.println("Background image not found");
 		}
-
+		
 		JMenuBar menuBar = new JMenuBar();
 		JMenu game = new JMenu("Game");
 		JMenuItem nGame = new JMenuItem("New Game");
@@ -61,18 +59,24 @@ public class Main {
 		menuBar.add(help);
 
 		JPanel rightGameBoard = new JPanel(new GridLayout(3, 3, 10, 10));
-		JPanel leftInfoBoard = new JPanel(new GridLayout(4, 1, 50, 20));
-		JPanel infoBottom = new JPanel(new FlowLayout());
-		JPanel scoreBoard = new JPanel(new GridLayout(1, 2, 25, 25));
+		JPanel leftInfoBoard = new JPanel(new GridLayout(5, 1, 0, 20));
+		JPanel shortcutButtons = new JPanel(new FlowLayout(FlowLayout.CENTER,50,10));
+		JPanel scoreBoard = new JPanel(new GridLayout(1, 2));
+		
 
 		JLabel gameTitleJLabel = new JLabel("X O X - GAME");
-		gameTitleJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+		gameTitleJLabel.setFont(new Font("Tahoma", Font.BOLD, 40));
 		gameTitleJLabel.setHorizontalAlignment(JLabel.CENTER);
-
-		JLabel user1StatsJLabel = new JLabel("User 1: ");
-		user1StatsJLabel.setFont(new Font("Arial", Font.BOLD, 15));
-		JLabel user2StatsJLabel = new JLabel("User 2: ");
-		user2StatsJLabel.setFont(new Font("Arial", Font.BOLD, 15));
+		
+		JLabel waitingBotDecisionJLabel = new JLabel();
+		waitingBotDecisionJLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
+		waitingBotDecisionJLabel.setForeground(Color.white);
+		waitingBotDecisionJLabel.setHorizontalAlignment(JLabel.CENTER);
+		
+		JLabel user1StatsJLabel = new JLabel("User: ");
+		user1StatsJLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
+		JLabel user2StatsJLabel = new JLabel("Bot: ");
+		user2StatsJLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
 
 		user1StatsJLabel.setHorizontalAlignment(JLabel.CENTER);
 		user2StatsJLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -86,14 +90,35 @@ public class Main {
 				+ "The goal is to get three marks in a row.<br>"
 				+ "You can win horizontally, vertically, or diagonally.<br>"
 				+ "If no player gets three in a row, the game ends in a draw." + "</div>" + "</html>");
-		gameGuideJLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+		gameGuideJLabel.setFont(new Font("Tahoma", Font.ITALIC, 12));
 		gameGuideJLabel.setHorizontalAlignment(JLabel.CENTER);
 
-		JButton restartbtn = new JButton("Restart Game");
-		JButton clearbtn = new JButton("Clear Board");
+		JButton restartbtn;
+		if (restartbtnUrl != null) {
+		    restartbtn = new JButton(new ImageIcon(restartbtnUrl));
+		} else {
+		    restartbtn = new JButton("Restart");
+		}
+		restartbtn.setOpaque(false);
+		restartbtn.setBorderPainted(false);
+		restartbtn.setFocusPainted(false);
+		restartbtn.setContentAreaFilled(false);
+		restartbtn.setPreferredSize(new Dimension(60, 60));
 
-		infoBottom.add(restartbtn);
-		infoBottom.add(clearbtn);
+		JButton clearbtn;
+		if (clearbtnUrl != null) {
+		    clearbtn = new JButton(new ImageIcon(clearbtnUrl));
+		} else {
+		    clearbtn = new JButton("Clear");
+		}
+		clearbtn.setOpaque(false);
+		clearbtn.setBorderPainted(false);
+		clearbtn.setFocusPainted(false);
+		clearbtn.setContentAreaFilled(false);
+		clearbtn.setPreferredSize(new Dimension(60, 60));
+
+		shortcutButtons.add(restartbtn);
+		shortcutButtons.add(clearbtn);
 
 		JButton row1col1 = new JButton("");
 		JButton row1col2 = new JButton("");
@@ -110,34 +135,34 @@ public class Main {
 
 		JButton[] cells = { row1col1, row1col2, row1col3, row2col1, row2col2, row2col3, row3col1, row3col2, row3col3 };
 
-		restartbtn.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel));
-		clearbtn.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel));
+		restartbtn.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+		clearbtn.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 
-		nGame.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel));
-		cGame.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel));
+		nGame.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+		cGame.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		eGame.addActionListener(e -> System.exit(0));
 		
-		pwb.addActionListener(e-> GameMechanics.changeMode(false,board,user1StatsJLabel,user2StatsJLabel));
-		pwp.addActionListener(e-> GameMechanics.changeMode(true,board,user1StatsJLabel,user2StatsJLabel));
+		pwb.addActionListener(e-> GameMechanics.changeMode(false,board,user1StatsJLabel,user2StatsJLabel,waitingBotDecisionJLabel));
+		pwp.addActionListener(e-> GameMechanics.changeMode(true,board,user1StatsJLabel,user2StatsJLabel,waitingBotDecisionJLabel));
 
 		row1col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col1, board, 0, 0,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row1col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col2, board, 0, 1,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row1col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col3, board, 0, 2,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row2col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col1, board, 1, 0,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row2col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col2, board, 1, 1,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row2col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col3, board, 1, 2,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row3col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col1, board, 2, 0,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row3col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col2, board, 2, 1,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 		row3col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col3, board, 2, 2,
-				user1StatsJLabel, user2StatsJLabel));
+				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
 
 		howToPlay.addActionListener(e -> {
 			JLabel dialogLabel = new JLabel(gameGuideJLabel.getText());
@@ -159,9 +184,11 @@ public class Main {
 		});
 
 		for (JButton cell : cells) {
+			clearbtn.setOpaque(false);
 			cell.setBorderPainted(false);
 			cell.setFocusPainted(false);
-			cell.setFont(new Font("Arial", Font.BOLD, 140));
+			cell.setContentAreaFilled(false);
+			cell.setFont(new Font("Tahoma", Font.BOLD, 140));
 			cell.setHorizontalAlignment(JLabel.CENTER);
 			cell.setVerticalAlignment(JLabel.CENTER);
 			cell.setForeground(Color.WHITE);
@@ -175,7 +202,8 @@ public class Main {
 		leftInfoBoard.add(gameTitleJLabel);
 		leftInfoBoard.add(scoreBoard);
 		leftInfoBoard.add(gameGuideJLabel);
-		leftInfoBoard.add(infoBottom);
+		leftInfoBoard.add(shortcutButtons);
+		leftInfoBoard.add(waitingBotDecisionJLabel);
 
 		rightGameBoard.add(row1col1);
 		rightGameBoard.add(row1col2);
@@ -192,7 +220,7 @@ public class Main {
 
 		leftInfoBoard.setOpaque(false);
 		rightGameBoard.setOpaque(false);
-		infoBottom.setOpaque(false);
+		shortcutButtons.setOpaque(false);
 		scoreBoard.setOpaque(false);
 
 		gameBoardFrame.setJMenuBar(menuBar);

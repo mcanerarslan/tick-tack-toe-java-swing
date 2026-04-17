@@ -11,6 +11,8 @@ public class GameMechanics {
 	private static boolean isBotLastWinner = false;
 	private static boolean wasLastMoveByBot = false;
 
+	private static BotMechanics currentBotDifficulty = BotMechanics.EASY;
+
 	public static void selectCordinate(JFrame gameBoardFrame, JButton button, JButton[][] board, int row, int column,
 			JLabel user1Label, JLabel user2Label, JLabel waitingBotDecisionJLabel) {
 
@@ -30,17 +32,17 @@ public class GameMechanics {
 				}
 				String winnerString = currentPlayer + " won!";
 				JOptionPane.showMessageDialog(gameBoardFrame, winnerString, "Game", JOptionPane.PLAIN_MESSAGE);
-				clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
+				clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 			} else if (checkBoardIsFull(board)) {
 				JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!", "Game", JOptionPane.PLAIN_MESSAGE);
-				clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
+				clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 			} else {
 				switchPlayer();
 			}
 		} else {
-			
+
 			waitingBotDecisionJLabel.setText("");
-			
+
 			if (currentPlayer.equals("X")) {
 				button.setText("X");
 
@@ -48,13 +50,13 @@ public class GameMechanics {
 					score1++;
 					user1Label.setText("User: " + score1);
 					JOptionPane.showMessageDialog(gameBoardFrame, "X won!");
-					clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
+					clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 					return;
 				}
 
 				if (checkBoardIsFull(board)) {
 					JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!");
-					clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
+					clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 					return;
 				}
 
@@ -65,19 +67,18 @@ public class GameMechanics {
 					waitingBotDecisionJLabel.setText("The AI's selection is awaited.");
 
 					javax.swing.Timer timer = new javax.swing.Timer(700, e -> {
-						BotMechanics.startHardBot(board, user1Label, user2Label);
+						currentBotDifficulty.makeMove(board, user1Label, user2Label);
 						if (checkWinner(board)) {
 							score2++;
 							user2Label.setText("Bot: " + score2);
 							isBotLastWinner = true;
 							JOptionPane.showMessageDialog(gameBoardFrame, "O won!");
-							clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
-
+							clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 
 						} else if (checkBoardIsFull(board)) {
 							wasLastMoveByBot = true;
 							JOptionPane.showMessageDialog(gameBoardFrame, "Tie game!");
-							clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
+							clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 
 						} else {
 							switchPlayer();
@@ -85,9 +86,7 @@ public class GameMechanics {
 
 						waitingBotDecisionJLabel.setText("The AI made its selection.");
 					});
-					
-					
-					
+
 					timer.setRepeats(false);
 					timer.start();
 				}
@@ -95,29 +94,30 @@ public class GameMechanics {
 			}
 		}
 	}
-	
-	public static void clearBoard(JButton[][] board, JLabel user1Label, JLabel user2Label, JLabel waitingBotDecisionJLabel) {
+
+	public static void clearBoard(JButton[][] board, JLabel user1Label, JLabel user2Label,
+			JLabel waitingBotDecisionJLabel) {
 		waitingBotDecisionJLabel.setText("");
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				board[i][j].setText("");
 			}
 		}
-		
-		if(!isModeP2P && (wasLastMoveByBot || isBotLastWinner)) {
+
+		if (!isModeP2P && (wasLastMoveByBot || isBotLastWinner)) {
 			wasLastMoveByBot = false;
 			isBotLastWinner = false;
-			
+
 			currentPlayer = "O";
-			
-			javax.swing.Timer timer = new javax.swing.Timer(700, e->{
-				BotMechanics.startHardBot(board, user1Label, user2Label);
+
+			javax.swing.Timer timer = new javax.swing.Timer(700, e -> {
+				currentBotDifficulty.makeMove(board, user1Label, user2Label);
 				switchPlayer();
 			});
-			
+
 			timer.setRepeats(false);
 			timer.start();
-		}else {
+		} else {
 			currentPlayer = "X";
 		}
 	}
@@ -165,21 +165,36 @@ public class GameMechanics {
 		return true;
 	}
 
-
-
-	public static void restartGame(JButton[][] board, JLabel user1Label, JLabel user2Label,JLabel waitingBotDecisionJLabel) {
-		clearBoard(board, user1Label, user2Label,waitingBotDecisionJLabel);
+	public static void restartGame(JButton[][] board, JLabel user1Label, JLabel user2Label,
+			JLabel waitingBotDecisionJLabel) {
+		clearBoard(board, user1Label, user2Label, waitingBotDecisionJLabel);
 		score1 = 0;
 		score2 = 0;
 		currentPlayer = "X";
 		setScoreBoard(isModeP2P, user1Label, user2Label);
 	}
 
-	public static void changeMode(boolean decision, JButton[][] board, JLabel user1Label, JLabel user2Label, JLabel waitingBotDecisionJLabel) {
+	public static void changeMode(boolean decision, JButton[][] board, JLabel user1Label, JLabel user2Label,
+			JLabel waitingBotDecisionJLabel) {
 		if (decision != isModeP2P) {
 			isModeP2P = decision;
-			restartGame(board, user1Label, user2Label,waitingBotDecisionJLabel);
+			restartGame(board, user1Label, user2Label, waitingBotDecisionJLabel);
 		}
+	}
+
+	public static void changeDifficulty(String difficulty) {
+	    switch (difficulty) {
+	        case "Easy":
+	            currentBotDifficulty = BotMechanics.EASY;
+	            break;
+	        case "Medium":
+	            currentBotDifficulty = BotMechanics.MEDIUM;
+	            break;
+	        case "Hard":
+	        default:
+	            currentBotDifficulty = BotMechanics.HARD;
+	            break;
+	    }
 	}
 
 	public static void setScoreBoard(Boolean decision, JLabel user1Label, JLabel user2Label) {

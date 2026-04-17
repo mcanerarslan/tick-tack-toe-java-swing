@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class Main {
 
@@ -30,12 +32,12 @@ public class Main {
 //		System.out.println("bgUrl = " + bgUrl);
 
 		if (bgUrl != null) {
-		    JLabel backgroundMenu = new JLabel(new ImageIcon(bgUrl));
-		    backgroundMenu.setLayout(new BorderLayout());
-		    backgroundMenu.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		    gameBoardFrame.setContentPane(backgroundMenu);
+			JLabel backgroundMenu = new JLabel(new ImageIcon(bgUrl));
+			backgroundMenu.setLayout(new BorderLayout());
+			backgroundMenu.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+			gameBoardFrame.setContentPane(backgroundMenu);
 		}
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		JMenu game = new JMenu("Game");
 		JMenuItem nGame = new JMenuItem("New Game");
@@ -59,20 +61,20 @@ public class Main {
 		menuBar.add(help);
 
 		JPanel rightGameBoard = new JPanel(new GridLayout(3, 3, 10, 10));
-		JPanel leftInfoBoard = new JPanel(new GridLayout(5, 1, 0, 20));
-		JPanel shortcutButtons = new JPanel(new FlowLayout(FlowLayout.CENTER,50,10));
+		JPanel leftInfoBoard = new JPanel(new GridLayout(6, 1, 0, 0));
 		JPanel scoreBoard = new JPanel(new GridLayout(1, 2));
-		
+		JPanel shortcutButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
+		JPanel botDifficulty = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 40));
 
 		JLabel gameTitleJLabel = new JLabel("X O X - GAME");
-		gameTitleJLabel.setFont(new Font("Tahoma", Font.BOLD, 40));
+		gameTitleJLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
 		gameTitleJLabel.setHorizontalAlignment(JLabel.CENTER);
-		
+
 		JLabel waitingBotDecisionJLabel = new JLabel();
 		waitingBotDecisionJLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
 		waitingBotDecisionJLabel.setForeground(Color.white);
 		waitingBotDecisionJLabel.setHorizontalAlignment(JLabel.CENTER);
-		
+
 		JLabel user1StatsJLabel = new JLabel("User: ");
 		user1StatsJLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
 		JLabel user2StatsJLabel = new JLabel("Bot: ");
@@ -95,9 +97,9 @@ public class Main {
 
 		JButton restartbtn;
 		if (restartbtnUrl != null) {
-		    restartbtn = new JButton(new ImageIcon(restartbtnUrl));
+			restartbtn = new JButton(new ImageIcon(restartbtnUrl));
 		} else {
-		    restartbtn = new JButton("Restart");
+			restartbtn = new JButton("Restart");
 		}
 		restartbtn.setOpaque(false);
 		restartbtn.setBorderPainted(false);
@@ -107,9 +109,9 @@ public class Main {
 
 		JButton clearbtn;
 		if (clearbtnUrl != null) {
-		    clearbtn = new JButton(new ImageIcon(clearbtnUrl));
+			clearbtn = new JButton(new ImageIcon(clearbtnUrl));
 		} else {
-		    clearbtn = new JButton("Clear");
+			clearbtn = new JButton("Clear");
 		}
 		clearbtn.setOpaque(false);
 		clearbtn.setBorderPainted(false);
@@ -119,6 +121,33 @@ public class Main {
 
 		shortcutButtons.add(restartbtn);
 		shortcutButtons.add(clearbtn);
+
+		JRadioButton easyModeButton = new JRadioButton("Easy",true);
+		JRadioButton mediumModeButton = new JRadioButton("Medium");
+		JRadioButton hardModeButton = new JRadioButton("Hard");
+
+		ButtonGroup botDifficultyGroup = new ButtonGroup();
+		botDifficultyGroup.add(easyModeButton);
+		botDifficultyGroup.add(mediumModeButton);
+		botDifficultyGroup.add(hardModeButton);
+
+		
+		easyModeButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		easyModeButton.setForeground(Color.white);
+		mediumModeButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		mediumModeButton.setForeground(Color.white);
+		hardModeButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		hardModeButton.setForeground(Color.white);
+		
+		easyModeButton.addActionListener(e -> GameMechanics.changeDifficulty("Easy"));
+		mediumModeButton.addActionListener(e -> GameMechanics.changeDifficulty("Medium"));
+		hardModeButton.addActionListener(e -> GameMechanics.changeDifficulty("Hard"));
+
+		botDifficulty.setOpaque(false);
+		botDifficulty.setFocusable(false);
+		botDifficulty.add(easyModeButton);
+		botDifficulty.add(mediumModeButton);
+		botDifficulty.add(hardModeButton);
 
 		JButton row1col1 = new JButton("");
 		JButton row1col2 = new JButton("");
@@ -135,34 +164,44 @@ public class Main {
 
 		JButton[] cells = { row1col1, row1col2, row1col3, row2col1, row2col2, row2col3, row3col1, row3col2, row3col3 };
 
-		restartbtn.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
-		clearbtn.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+		restartbtn.addActionListener(
+				e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
+		clearbtn.addActionListener(
+				e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 
-		nGame.addActionListener(e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
-		cGame.addActionListener(e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+		nGame.addActionListener(
+				e -> GameMechanics.restartGame(board, user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
+		cGame.addActionListener(
+				e -> GameMechanics.clearBoard(board, user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		eGame.addActionListener(e -> System.exit(0));
-		
-		pwb.addActionListener(e-> GameMechanics.changeMode(false,board,user1StatsJLabel,user2StatsJLabel,waitingBotDecisionJLabel));
-		pwp.addActionListener(e-> GameMechanics.changeMode(true,board,user1StatsJLabel,user2StatsJLabel,waitingBotDecisionJLabel));
+
+		pwb.addActionListener(e -> {
+			GameMechanics.changeMode(false, board, user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel);
+			botDifficulty.setVisible(true);
+		});
+		pwp.addActionListener(e -> {
+			GameMechanics.changeMode(true, board, user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel);
+			botDifficulty.setVisible(false);
+		});
 
 		row1col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col1, board, 0, 0,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row1col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col2, board, 0, 1,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row1col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row1col3, board, 0, 2,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row2col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col1, board, 1, 0,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row2col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col2, board, 1, 1,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row2col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row2col3, board, 1, 2,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row3col1.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col1, board, 2, 0,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row3col2.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col2, board, 2, 1,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 		row3col3.addActionListener(e -> GameMechanics.selectCordinate(gameBoardFrame, row3col3, board, 2, 2,
-				user1StatsJLabel, user2StatsJLabel,waitingBotDecisionJLabel));
+				user1StatsJLabel, user2StatsJLabel, waitingBotDecisionJLabel));
 
 		howToPlay.addActionListener(e -> {
 			JLabel dialogLabel = new JLabel(gameGuideJLabel.getText());
@@ -172,19 +211,16 @@ public class Main {
 		});
 
 		aboutGame.addActionListener(e -> {
-			JLabel aboutText = new JLabel("<html>"
-					+ "<h2>X O X - GAME</h2>" 
-					+ "<b>Developer:</b> Mahmut Caner Arslan<br>" 
-					+ "<b>GitHub:</b> mcanerarslan<br><br>" 
-					+ "This is a simple Tic-Tac-Toe game developed with Java Swing." 
-					+ "</html>");
+			JLabel aboutText = new JLabel("<html>" + "<h2>X O X - GAME</h2>"
+					+ "<b>Developer:</b> Mahmut Caner Arslan<br>" + "<b>GitHub:</b> mcanerarslan<br><br>"
+					+ "This is a simple Tic-Tac-Toe game developed with Java Swing." + "</html>");
 			aboutText.setFont(gameGuideJLabel.getFont());
 			aboutText.setHorizontalAlignment(JLabel.CENTER);
 			JOptionPane.showMessageDialog(null, aboutText, "About", JOptionPane.PLAIN_MESSAGE);
 		});
 
 		for (JButton cell : cells) {
-			clearbtn.setOpaque(false);
+			cell.setOpaque(false);
 			cell.setBorderPainted(false);
 			cell.setFocusPainted(false);
 			cell.setContentAreaFilled(false);
@@ -202,8 +238,11 @@ public class Main {
 		leftInfoBoard.add(gameTitleJLabel);
 		leftInfoBoard.add(scoreBoard);
 		leftInfoBoard.add(gameGuideJLabel);
+
 		leftInfoBoard.add(shortcutButtons);
+
 		leftInfoBoard.add(waitingBotDecisionJLabel);
+		leftInfoBoard.add(botDifficulty);
 
 		rightGameBoard.add(row1col1);
 		rightGameBoard.add(row1col2);

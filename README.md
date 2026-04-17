@@ -3,7 +3,7 @@
 Java Swing kullanılarak geliştirilmiş, modern görünümlü ve akıllı yapay zeka katmanlarına sahip gelişmiş bir XOX oyunudur.
 
 ## 📸 Oyun Önizleme
-![Tic-Tac-Toe Screen Shot](assets/screenshoot.png)
+![Tic-Tac-Toe Screen Shot](https://github.com/mcanerarslan/tick-tack-toe-java-swing/blob/main/src/assets/screenshoot.png)
 
 ## 📺 Oynanış ve Yapay Zeka Sunumu
 Oyunun mekaniklerini, zorluk seviyelerini ve yapay zekanın nasıl karar verdiğini aşağıdaki videodan izleyebilirsiniz:

@@ -22,7 +22,7 @@ Oyunun mekaniklerini, zorluk seviyelerini ve yapay zekanın nasıl karar verdiğ
 ## 📥 Hemen Oyna (İndir)
 Kodlarla uğraşmadan oyunu doğrudan bilgisayarında çalıştırmak istersen, hazır `.jar` dosyasını aşağıdan indirebilirsin:
 
-[**📥 Tic-Tac-Toe v1.0.jar Dosyasını İndir**](BURAYA_RELEASE_LINKINI_YAPISTIR)
+[**📥 Tic-Tac-Toe v1.0.jar Dosyasını İndir**](https://github.com/mcanerarslan/tick-tack-toe-java-swing/releases/tag/v1.0)
 
 ## 🧠 Yapay Zeka Nasıl Çalışır?
 Botun karar verme süreci şu hiyerarşiyi takip eder:

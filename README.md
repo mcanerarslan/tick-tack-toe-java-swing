@@ -10,6 +10,14 @@ Java Swing kullanılarak geliştirilmiş, modern görünümlü ve akıllı yapay
 - **Şık Arayüz:** Özel arka plan, ikonlar, transparan butonlar ve akıcı bir kullanıcı arayüzü.
 - **Esnek Oyun Modları:** İster yapay zekaya karşı, ister aynı bilgisayardan bir arkadaşına karşı (P2P) oyna.
 
+## 📥 Hemen Oyna (İndir)
+
+Kodlarla uğraşmadan oyunu doğrudan bilgisayarında çalıştırmak istersen, hazır `.jar` dosyasını aşağıdan indirebilirsin:
+
+[**📥 Tic-Tac-Toe v1.0.jar Dosyasını İndir**]([https://github.com/mcanerarslan/tick-tack-toe-java-swing/releases/tag/v1.0])
+
+> **Not:** Oyunu çalıştırmak için bilgisayarınızda Java yüklü olmalıdır. İndirdikten sonra dosyaya çift tıklayarak oyuna başlayabilirsiniz.
+
 ## 🧠 Yapay Zeka Nasıl Çalışır?
 
 Botun karar verme süreci şu hiyerarşiyi takip eder:
